@@ -29,6 +29,15 @@ final witness sizes, and the node's confirmation. `docs/demo.cast` is the
 same recording for `asciinema play`. Set `RUST_LOG` to see the payjoin
 crate's own logging underneath.
 
+With `PISA_KEEP_NODE=1` the node stays up after the run and the binary
+prints its RPC URL and cookie file, so a block explorer can be pointed at
+it. The `cisa-witness-v2` branch of
+[bitcoin-pisa/mempool](https://github.com/bitcoin-pisa/mempool/tree/cisa-witness-v2)
+renders the result like this, with `MEMPOOL.BACKEND` set to `none` and
+`CORE_RPC` set to that node:
+
+![The transaction in the mempool fork](docs/explorer.png)
+
 The same run is the end-to-end test:
 
 ```sh

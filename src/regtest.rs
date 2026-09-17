@@ -30,6 +30,10 @@ pub struct RoundTrip {
     pub transaction: Transaction,
     /// Confirmations of the transaction as seen by the node.
     pub confirmations: u32,
+    /// The node that mined it. It stops when this is dropped, so a caller
+    /// that wants to inspect the chain afterwards, with an explorer for
+    /// instance, holds on to it.
+    pub node: Node,
 }
 
 impl RoundTrip {
@@ -208,6 +212,7 @@ async fn run() -> Result<RoundTrip> {
     Ok(RoundTrip {
         transaction: mined.transaction,
         confirmations: mined.confirmations.unwrap_or_default() as u32,
+        node,
     })
 }
 

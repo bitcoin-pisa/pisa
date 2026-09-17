@@ -34,5 +34,17 @@ fn main() -> anyhow::Result<()> {
     println!("confirmations {}", outcome.confirmations);
     println!();
     println!("{}", bitcoin::consensus::encode::serialize_hex(tx));
+
+    // With PISA_KEEP_NODE set the node stays up so that an explorer can be
+    // pointed at it. Interrupt the process to stop it.
+    if std::env::var_os("PISA_KEEP_NODE").is_some() {
+        println!();
+        println!("node rpc    {}", outcome.node.rpc_url());
+        println!("node cookie {}", outcome.node.params.cookie_file.display());
+        println!("node kept running, interrupt to stop");
+        loop {
+            std::thread::park();
+        }
+    }
     Ok(())
 }
