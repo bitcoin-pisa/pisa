@@ -22,6 +22,13 @@ result, and prints it. The transaction has two inputs. One carries an empty
 witness, the other a 65-byte witness with the aggregate signature and the
 BIP 460 marker.
 
+![A recorded run of pisa-regtest](docs/demo.gif)
+
+The run narrates each step: which PSBT fields each message carries, the
+final witness sizes, and the node's confirmation. `docs/demo.cast` is the
+same recording for `asciinema play`. Set `RUST_LOG` to see the payjoin
+crate's own logging underneath.
+
 The same run is the end-to-end test:
 
 ```sh
