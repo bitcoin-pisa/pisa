@@ -1,0 +1,4 @@
+[submodule "vendor/rust-payjoin"]
+	path = vendor/rust-payjoin
+	url = https://github.com/bitcoin-pisa/rust-payjoin.git
+	branch = cisa-psbt-carriage

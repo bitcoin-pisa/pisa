@@ -1,0 +1,31 @@
+[package]
+name = "pisa"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "MIT OR Apache-2.0"
+description = "Async payjoin with BIP 460 full signature aggregation, on regtest"
+repository = "https://github.com/bitcoin-pisa/pisa"
+publish = false
+
+[dependencies]
+anyhow = "1"
+bitcoin = { version = "0.32", features = ["base64", "rand-std"] }
+payjoin = { version = "1.0.0", default-features = false, features = ["v2", "io"] }
+payjoin-test-utils = "0.0.1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# The payjoin crates come from the submodule, which carries the CISA field
+# support that the published crates do not have yet.
+[patch.crates-io]
+payjoin = { path = "vendor/rust-payjoin/payjoin" }
+payjoin-mailroom = { path = "vendor/rust-payjoin/payjoin-mailroom" }
+payjoin-test-utils = { path = "vendor/rust-payjoin/payjoin-test-utils" }
+
+[[bin]]
+name = "pisa-regtest"
+path = "src/main.rs"

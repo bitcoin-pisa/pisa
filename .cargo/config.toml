@@ -1,0 +1,4 @@
+# The test harness starts bitcoind itself. It must be a build of Bitcoin Core
+# that validates BIP 460, see README.md; never a downloaded release binary.
+[env]
+BITCOIND_SKIP_DOWNLOAD = "1"
