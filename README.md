@@ -29,20 +29,62 @@ final witness sizes, and the node's confirmation. `docs/demo.cast` is the
 same recording for `asciinema play`. Set `RUST_LOG` to see the payjoin
 crate's own logging underneath.
 
-With `PISA_KEEP_NODE=1` the node stays up after the run and the binary
-prints its RPC URL and cookie file, so a block explorer can be pointed at
-it. The `cisa-witness-v2` branch of
-[bitcoin-pisa/mempool](https://github.com/bitcoin-pisa/mempool/tree/cisa-witness-v2)
-renders the result like this, with `MEMPOOL.BACKEND` set to `none` and
-`CORE_RPC` set to that node:
-
-![The transaction in the mempool fork](docs/explorer.png)
-
 The same run is the end-to-end test:
 
 ```sh
 BITCOIND_EXE=/path/to/bitcoind cargo test --test regtest -- --include-ignored
 ```
+
+## Where it saves money
+
+A group of n inputs carries one signature instead of n, which is 64 weight
+units, about 16 vB, for every input beyond the group's last. Two inputs save
+16 vB. The saving is worth something where a transaction has many inputs,
+and payjoin is how one party's many inputs end up in another party's
+transaction.
+
+`cargo run --bin pisa-regtest -- --cut-through` runs that case. A customer
+deposits 1 BTC to an exchange which has four withdrawals pending. Rather
+than hold the deposit in an output of its own and pay the withdrawals from a
+later batch, the exchange puts the four withdrawal outputs into the deposit
+transaction and covers the difference with five coins of its own. All six
+witness version 2 inputs form one group.
+
+![A recorded run of the cut-through](docs/cutthrough.gif)
+
+```
+                                                   vB  fee at 10 sat/vB
+  no payjoin: deposit, then a batch   computed    725              7250
+  payjoin, every input signed         measured    614              6140
+  payjoin, one aggregate signature    measured    534              5340
+```
+
+The first row is the pair of transactions an exchange without payjoin makes:
+the deposit, and a batch that spends it together with the five coins. The
+demo does not build them, so that row is computed from BIP 341 weights in
+`src/cost.rs`. The other two are mined transactions. The run builds the same
+cut-through twice, once with the exchange's coins in the group and once with
+each of them signed on its own, so the row a reader is most likely to doubt
+is measured rather than asserted.
+
+The run prints who paid, too. BIP 78 has the customer cover the transaction
+it would have made alone plus the contribution it offered, and the receiver
+cover the rest of its inputs and all of the outputs it added. Of the 4966
+sat fee that is 2068 sat and 2898 sat. `--withdrawals`, `--top-up` and
+`--fee-rate` change the scenario; `docs/cutthrough.cast` is the recording
+above for `asciinema play`.
+
+## In a block explorer
+
+With `PISA_KEEP_NODE=1` the node stays up after the run and the binary
+prints its RPC URL and cookie file, so a block explorer can be pointed at
+it. The `cisa-witness-v2` branch of
+[bitcoin-pisa/mempool](https://github.com/bitcoin-pisa/mempool/tree/cisa-witness-v2)
+renders the cut-through like this, with `MEMPOOL.BACKEND` set to `none` and
+`CORE_RPC` set to that node. Five of the six inputs carry an empty witness;
+the sixth carries the signature for all of them.
+
+![The cut-through in the mempool fork](docs/cutthrough.png)
 
 ## Requirements
 
@@ -80,7 +122,8 @@ PSBT fields of the draft "CISA Fields for PSBT" between the two parties:
   fallback PSBT before it leaves.
 - `src/receiver.rs` contributes the receiver's coins as members of the
   group, each with a nonce reserved on the spot.
-- `src/regtest.rs` drives the BIP 77 session end to end.
+- `src/regtest.rs` drives both scenarios end to end.
+- `src/cost.rs` holds the weights the comparison is built from.
 
 The payjoin crate had to change in four places for this to work; see
 `docs/bip77-full-aggregation.md` for the protocol profile and for what the
