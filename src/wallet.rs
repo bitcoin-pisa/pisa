@@ -15,6 +15,8 @@ use payjoin_test_utils::corepc_node::Client;
 use serde_json::json;
 use std::str::FromStr;
 
+use crate::receiver::Spend;
+
 /// A wallet that can take part in a BIP 460 full-aggregation group.
 ///
 /// The two methods are the whole contract between the payjoin half and the
@@ -114,9 +116,9 @@ impl CoreWallet {
         Ok(address.require_network(self.network)?)
     }
 
-    /// The wallet's spendable coins as receiver inputs, without any
-    /// aggregation fields yet.
-    pub fn list_unspent(&self) -> Result<Vec<InputPair>> {
+    /// The wallet's spendable coins as receiver inputs, each declared for
+    /// the given kind of spend.
+    pub fn list_unspent(&self, spend: Spend) -> Result<Vec<InputPair>> {
         let unspent = self.rpc.list_unspent()?.into_model()?;
         unspent
             .0
@@ -134,7 +136,7 @@ impl CoreWallet {
             })
             .map(|coin: Result<_>| {
                 let (outpoint, txout) = coin?;
-                crate::receiver::fullagg_input_pair(self, outpoint, txout)
+                crate::receiver::input_pair(self, outpoint, txout, spend)
             })
             .collect()
     }

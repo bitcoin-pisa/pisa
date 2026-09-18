@@ -11,6 +11,7 @@
 //! PSBT" between the parties, and drives the BIP 77 session. See
 //! [`wallet::AggregatingWallet`] for the contract a wallet has to meet.
 
+pub mod cost;
 pub mod receiver;
 pub mod regtest;
 pub mod sender;
