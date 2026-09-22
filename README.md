@@ -97,7 +97,7 @@ the sixth carries the signature for all of them.
 
 ```sh
 git clone https://github.com/fjahr/bitcoin -b bip460
-cmake -S bitcoin -B bitcoin/build -DBUILD_TESTS=OFF -DBUILD_GUI=OFF
+cmake -S bitcoin -B bitcoin/build -DBUILD_TESTS=OFF -DBUILD_GUI=OFF -DENABLE_IPC=OFF
 cmake --build bitcoin/build -j"$(nproc)"
 export BITCOIND_EXE="$PWD/bitcoin/build/bin/bitcoind"
 ```

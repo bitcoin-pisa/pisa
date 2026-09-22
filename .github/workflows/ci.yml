@@ -51,7 +51,7 @@ jobs:
           git -C bitcoin-core checkout -q FETCH_HEAD
           cmake -S bitcoin-core -B bitcoin-core/build -DBUILD_TESTS=OFF -DBUILD_BENCH=OFF -DBUILD_GUI=OFF \
             -DBUILD_FUZZ_BINARY=OFF -DWITH_ZMQ=OFF -DBUILD_TX=OFF -DBUILD_UTIL=OFF -DBUILD_WALLET_TOOL=OFF \
-            -DCMAKE_BUILD_TYPE=Release
+            -DENABLE_IPC=OFF -DCMAKE_BUILD_TYPE=Release
           cmake --build bitcoin-core/build -j"$(nproc)" --target bitcoind bitcoin-cli
       - name: Run the round trip
         env:
