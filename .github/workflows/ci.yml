@@ -8,7 +8,7 @@ env:
   CARGO_TERM_COLOR: always
   # The pinned commit of Fabian Jahr's BIP 460 branch of Bitcoin Core.
   BITCOIN_CORE_REPO: fjahr/bitcoin
-  BITCOIN_CORE_REV: 224e15fd891334f0a2fb924d2ac60bc08ed9e4f3
+  BITCOIN_CORE_REV: 07addd3748f4bb090b38835925a7d532e3190c27
 
 jobs:
   check:
